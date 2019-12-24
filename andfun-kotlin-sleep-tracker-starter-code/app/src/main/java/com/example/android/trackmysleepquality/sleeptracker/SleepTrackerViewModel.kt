@@ -21,8 +21,10 @@ import android.provider.SyncStateContract.Helpers.insert
 import android.provider.SyncStateContract.Helpers.update
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.example.android.trackmysleepquality.database.SleepDatabaseDao
 import com.example.android.trackmysleepquality.database.SleepNight
+import com.example.android.trackmysleepquality.formatNights
 import kotlinx.coroutines.*
 
 /**
@@ -53,6 +55,10 @@ class SleepTrackerViewModel(
 
     // Gets all the nights in the database when we create the view model
     private val nights = database.getAllNights()
+
+    val nightsString = Transformations.map(nights){nights ->
+        formatNights(nights, application.resources)
+    }
 
     init {
         initializeTonight()
@@ -104,10 +110,18 @@ class SleepTrackerViewModel(
 //        }
 //    }
 
-    fun onStopTracking(){
+    /**
+     * Executes when the STOP button is clicked.
+     */
+    fun onStopTracking() {
         uiScope.launch {
+            // In Kotlin, the return@label syntax is used for specifying which function among
+            // several nested ones this statement returns from.
+            // In this case, we are specifying to return from launch(),
+            // not the lambda.
             val oldNight = tonight.value ?: return@launch
 
+            // Update the night in the database to add the end time.
             oldNight.endTimeMilli = System.currentTimeMillis()
 
             update(oldNight)
