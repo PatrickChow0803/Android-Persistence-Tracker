@@ -24,6 +24,8 @@ import androidx.room.*
 interface SleepDatabaseDao{
 
     // Insert into the database
+    // Room will generate all the necessary code to insert the passed in
+    // SleepNight into the database. Note that you can call the function anything you want
     @Insert
     fun insert(night: SleepNight)
 

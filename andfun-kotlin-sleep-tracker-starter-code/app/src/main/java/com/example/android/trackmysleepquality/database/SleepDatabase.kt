@@ -15,3 +15,47 @@
  */
 
 package com.example.android.trackmysleepquality.database
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+
+// entities = {...} Tells room about the entities that you'll be using.
+// exportSchema = true will save the schema of the database into a folder.
+// change version number for when making changes to the database
+
+@Database(entities = [SleepNight::class], version = 1, exportSchema = false)
+abstract class SleepDatabase : RoomDatabase(){
+
+    abstract val sleepDatabaseDao: SleepDatabaseDao
+
+    companion object{
+
+        // Instance will keep a reference to the database
+        @Volatile // Volatile annotation makes sure that the value of INSTANCE is always up to date
+        private var INSTANCE: SleepDatabase ?= null
+
+        fun getInstance(context: Context): SleepDatabase{
+            // synchronized = Means only one thread of execution at a time can enter this block of code
+            // Makes sure that the database only get's made once.
+            synchronized(this){
+                var instance = INSTANCE
+
+                if(instance == null){
+                    instance = Room.databaseBuilder(
+                            context.applicationContext,
+                            SleepDatabase::class.java,
+                            "sleep_history_database"
+                    )
+                            .fallbackToDestructiveMigration()
+                            .build()
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
+
+    }
+
+}
