@@ -15,3 +15,27 @@
  */
 
 package com.example.android.trackmysleepquality.database
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+// Entity lets Room know about this class and make it into a table
+@Entity(tableName = "daily_sleep_quality_table")
+data class SleepNight(
+
+        @PrimaryKey(autoGenerate = true)
+        var nightId: Long = 0L,
+
+        // Since a new sleep night is created when the user presses the button, should start recording from current time.
+        // ColumnInfo is the name of the column.
+        @ColumnInfo(name = "start_time_milli")
+        var startTimeMilli: Long = System.currentTimeMillis(),
+
+        @ColumnInfo(name = "end_time_milli")
+        var endTimeMilli: Long = startTimeMilli,
+
+        // -1 means didn't record yet.
+        @ColumnInfo(name = "quality_rating")
+        var sleepQuality: Int = -1
+)
